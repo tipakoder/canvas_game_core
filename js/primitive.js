@@ -59,3 +59,11 @@ CanvasRenderingContext2D.prototype.setAction = function(data) {
         function: data.function
     };
 };
+
+String.prototype.isLetter = function() {
+    value = this.toUpperCase();
+    for (let i = 0; i < value.length; i++) 
+        if (!(value[i] >= "A" && value[i] <= "Z")) return false;
+
+    return true;
+}

@@ -272,6 +272,129 @@
         };
     }
 
+    let textBox = function(data) {
+        setDefault({
+            color: "#F1F1F1",
+            colorPlaceholder: "#FFF",
+            background: "#333",
+            fontSize: 16,
+            align: "center",
+            fontFamily: defaultFont,
+            position: {x: 0, y: 0},
+            size: {w: 100, h: 16},
+            padding: {v: 8, h: 16},
+            round: 16,
+            text: "",
+            placeholder: "Placeholder",
+            focus: false,
+            inputIndicator: "|",
+            inputIndicatorProcess: ""
+        }, data);
+        return {
+            name: "textBox",
+            data: data,
+            render: function() {
+                // Render background
+                viewport.context.rectangle({
+                    x: data.position.x, 
+                    y: data.position.y, 
+                    w: data.size.w + (data.padding.h*2), 
+                    h: data.size.h + (data.padding.v*2), 
+                    color: data.background,
+                    round: data.round
+                });
+                if(data.focus == false) {
+                    // Draw placeholder
+                    viewport.context.text({
+                        x: data.position.x + (data.size.w/2) + data.padding.h,
+                        y: data.position.y,
+                        w: data.size.w,
+                        align: data.align,
+                        color: data.color,
+                        fontStyle: data.fontStyle,
+                        fontSize: data.fontSize,
+                        fontFamily: data.fontFamily,
+                        text: data.placeholder
+                    });
+                } else {
+                    // Math input indicator 
+                    data.inputIndicatorX = viewport.context.getSymbolWidth({
+                        fontFamily: data.fontFamily,
+                        fontSize: data.fontSize,
+                        fontStyle: data.fontStyle,
+                        value: data.text
+                    })/2;
+                    if(data.inputIndicatorX > data.size.w/2) {
+                        data.inputIndicatorX = data.size.w/2;
+                    }
+                    // Draw "|"
+                    viewport.context.text({
+                        x: data.position.x + (data.size.w/2) + data.padding.h + data.inputIndicatorX,
+                        y: data.position.y,
+                        w: data.size.w,
+                        align: data.align,
+                        color: data.color,
+                        fontStyle: data.fontStyle,
+                        fontSize: data.fontSize,
+                        fontFamily: data.fontFamily,
+                        text: data.inputIndicatorProcess
+                    });
+                    // Draw text if focus
+                    viewport.context.text({
+                        x: data.position.x + (data.size.w/2) + data.padding.h,
+                        y: data.position.y,
+                        w: data.size.w,
+                        align: data.align,
+                        color: data.color,
+                        fontStyle: data.fontStyle,
+                        fontSize: data.fontSize,
+                        fontFamily: data.fontFamily,
+                        text: data.text
+                    });
+                }
+                data.inputtext = viewport.context.setAction({
+                    position: data.position,
+                    size: {
+                        w: data.size.w + (data.padding.h*2.8),
+                        h: data.size.h + (data.padding.v*1)
+                    },
+                    function: function() {
+                        if(data.focus == false) {
+                            data.focus = true;
+                            data.inputIndicatorInterval = setInterval(function() {
+                                if(data.inputIndicatorProcess == data.inputIndicator) {
+                                    data.inputIndicatorProcess = "";
+                                } else {
+                                    data.inputIndicatorProcess = data.inputIndicator;
+                                }
+                            }, 500);
+                            document.addEventListener("keydown", function(e) {
+                                if(e.code == "Escape") {
+                                    data.focus = false;
+                                }
+                                if(data.focus) {
+                                    letter = e.code.replace("Key", "")[0];
+                                    if(e.code == "Backspace") {
+                                        data.text = data.text.substr(0, data.text.length-1);
+                                    } else if(letter.isLetter()) {
+                                        data.text += letter;
+                                    }
+                                }
+                            });
+                        } else {
+                            clearInterval(data.inputIndicatorInterval);
+                        }
+                    }
+                });
+                game.addAction(data.key+"_inputtext", data.inputtext);
+            },
+            remove: function() {
+                game.removeRender(data.key);
+                game.removeAction(data.key+"_action");
+            }
+        }
+    }
+
     let setDefault = function(def, data) {
         data.key = game.specialKey();
         for(let key in def) {
@@ -283,6 +406,7 @@
         button: button,
         text: text,
         multiText: multiText,
-        dialog: dialog
+        dialog: dialog,
+        textBox: textBox
     };
 })();
