@@ -41,6 +41,15 @@ CanvasRenderingContext2D.prototype.setFont = function(data) {
     this.font = data.fontStyle + " " + data.fontSize + "px " + data.fontFamily + " sans-serif";
 };
 
+CanvasRenderingContext2D.prototype.getSymbolWidth = function(data) {
+    this.setFont({
+        fontSize: data.fontSize, 
+        fontFamily: data.fontFamily, 
+        fontStyle: data.fontStyle
+    });
+    return Math.round(this.measureText(data.value).width);
+};
+
 CanvasRenderingContext2D.prototype.setAction = function(data) {
     let path = new Path2D();
     path.rect(data.position.x, data.position.y, data.size.w, data.size.h);

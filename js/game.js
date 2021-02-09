@@ -2,10 +2,11 @@
     let viewport = {
         object: undefined,
         context: undefined,
+        backgroundColor: "#FFF",
         size: { width: 1500, height: 1500 },
         render: function() {
             viewport.context.clearRect(0, 0, viewport.size.width, viewport.size.height);
-            viewport.context.fillStyle = "#222";
+            viewport.context.fillStyle = viewport.backgroundColor;
             viewport.context.fillRect(0, 0, this.size.width, this.size.height);
         },
         resize: function() {
