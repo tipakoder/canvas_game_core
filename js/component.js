@@ -1,6 +1,6 @@
 (function() {
     let viewport = game.viewport;
-
+    // Button component
     let button = function(data) {
         setDefault({
             color: "#FFF",
@@ -76,7 +76,7 @@
             }
         };
     }
-
+    // Simple text component
     let text = function(data) {
         setDefault({
             color: "#FFF",
@@ -118,7 +118,7 @@
             }
         };
     }
-
+    // Multiline text
     let multiText = function(data) {
         setDefault({
             color: "#FFF",
@@ -173,7 +173,7 @@
             }
         };
     }
-
+    // Dialog window
     let dialog = function(data) {
         setDefault({
             color: "#F1F1F1",
@@ -197,8 +197,17 @@
                     game.removeRender(data.key);
                     game.removeAction(data.key+"_action");
                 }
-            }]
+            }],
+            readyButtons: []
         }, data);
+        // Prepare buttons
+        for(let bdata of data.button) {
+            bdata.size = {w: 0, h: 40};
+            bdata.background = "#555";
+            let buttonObject = button(bdata);
+            buttonObject.setAction(bdata.function);
+            data.readyButtons.push(buttonObject);
+        }
         return {
             name: "dialog",
             data: data,
@@ -253,15 +262,11 @@
                 // Render multiline text
                 multitext.render();
                 // Render buttons
-                for(let bdata of data.button) {
-                    bdata.size = {w: 0, h: 40};
-                    bdata.background = "#555";
-                    let buttonObject = button(bdata);
+                for(let buttonObject of data.readyButtons) {
                     buttonObject.data.position = {
                         x: ((viewport.size.width/2) + (data.size.w/2)) - (data.padding.h + buttonObject.getWidth()),
                         y: ((viewport.size.height/2) + (data.size.h/2)) - (data.padding.v + 25)
                     };
-                    buttonObject.setAction(bdata.function);
                     buttonObject.render();
                 }
             },
@@ -271,7 +276,7 @@
             }
         };
     }
-
+    // Simple input field
     let textBox = function(data) {
         setDefault({
             color: "#F1F1F1",
@@ -303,7 +308,7 @@
                     color: data.background,
                     round: data.round
                 });
-                if(data.focus == false) {
+                if(data.focus == false && data.text == "") {
                     // Draw placeholder
                     viewport.context.text({
                         x: data.position.x + (data.size.w/2) + data.padding.h,
@@ -316,7 +321,22 @@
                         fontFamily: data.fontFamily,
                         text: data.placeholder
                     });
-                } else {
+                } else if(data.text != "") {
+                    // Draw text if focus
+                    viewport.context.text({
+                        x: data.position.x + (data.size.w/2) + data.padding.h,
+                        y: data.position.y,
+                        w: data.size.w,
+                        align: data.align,
+                        color: data.color,
+                        fontStyle: data.fontStyle,
+                        fontSize: data.fontSize,
+                        fontFamily: data.fontFamily,
+                        text: data.text
+                    });
+                }
+                
+                if(data.focus == true) {
                     // Math input indicator 
                     data.inputIndicatorX = viewport.context.getSymbolWidth({
                         fontFamily: data.fontFamily,
@@ -338,18 +358,6 @@
                         fontSize: data.fontSize,
                         fontFamily: data.fontFamily,
                         text: data.inputIndicatorProcess
-                    });
-                    // Draw text if focus
-                    viewport.context.text({
-                        x: data.position.x + (data.size.w/2) + data.padding.h,
-                        y: data.position.y,
-                        w: data.size.w,
-                        align: data.align,
-                        color: data.color,
-                        fontStyle: data.fontStyle,
-                        fontSize: data.fontSize,
-                        fontFamily: data.fontFamily,
-                        text: data.text
                     });
                 }
                 data.inputtext = viewport.context.setAction({
@@ -387,6 +395,16 @@
                     }
                 });
                 game.addAction(data.key+"_inputtext", data.inputtext);
+                data.inputhover = viewport.context.setAction({
+                    function: function() {
+                        document.addEventListener("mouseover", function(){
+                            
+                        });
+                    }
+                });
+            },
+            getWidth: function() {
+                return data.size.w;
             },
             remove: function() {
                 game.removeRender(data.key);
@@ -394,7 +412,7 @@
             }
         }
     }
-
+    // Util function
     let setDefault = function(def, data) {
         data.key = game.specialKey();
         for(let key in def) {

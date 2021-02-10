@@ -3,11 +3,17 @@
         object: undefined,
         context: undefined,
         backgroundColor: "#FFF",
+        backgroundImage: null,
         size: { width: 1500, height: 1500 },
         render: function() {
             viewport.context.clearRect(0, 0, viewport.size.width, viewport.size.height);
+            // Background color
             viewport.context.fillStyle = viewport.backgroundColor;
             viewport.context.fillRect(0, 0, this.size.width, this.size.height);
+            // Background image
+            if(viewport.backgroundImage != null) {
+                viewport.context.drawImage(viewport.backgroundImage, 0, 0, viewport.size.width, viewport.size.height);
+            }
         },
         resize: function() {
             viewport.size.width = window.innerWidth; 
@@ -85,6 +91,10 @@
     window.game = {
         //Viewport
         viewport: viewport,
+        //Active actions
+        actions: buttons,
+        //Render objects
+        render: renderList,
         // Run function
         run: run,
         // After load function
@@ -102,6 +112,7 @@
         // Remove action
         removeAction: function(key) { if(buttons[key] != undefined) delete buttons[key]; }, 
         // Generation special key
-        specialKey: specialKey
+        specialKey: specialKey,
+        getMousePosition: getMousePosition
     };
 })();
