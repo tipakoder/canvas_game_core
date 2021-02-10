@@ -21,13 +21,14 @@
             name: "button",
             data: data,
             setAction: function(func) {
+                data.function = func;
                 data.action = viewport.context.setAction({
                     position: data.position,
                     size: {
                         w: data.size.w + (data.padding.h*2.8),
                         h: data.size.h + (data.padding.v*1)
                     },
-                    function: func
+                    function: data.function
                 });
                 game.addAction(data.key+"_action", data.action);
             },
@@ -267,6 +268,7 @@
                         x: ((viewport.size.width/2) + (data.size.w/2)) - (data.padding.h + buttonObject.getWidth()),
                         y: ((viewport.size.height/2) + (data.size.h/2)) - (data.padding.v + 25)
                     };
+                    buttonObject.setAction(buttonObject.data.function);
                     buttonObject.render();
                 }
             },
