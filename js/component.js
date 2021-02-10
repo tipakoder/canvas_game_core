@@ -395,13 +395,13 @@
                     }
                 });
                 game.addAction(data.key+"_inputtext", data.inputtext);
-                data.inputhover = viewport.context.setAction({
-                    function: function() {
-                        document.addEventListener("mouseover", function(){
+                // data.inputhover = viewport.context.setAction({
+                //     function: function() {
+                //         document.addEventListener("mouseover", function(){
                             
-                        });
-                    }
-                });
+                //         });
+                //     }
+                // });
             },
             getWidth: function() {
                 return data.size.w;
