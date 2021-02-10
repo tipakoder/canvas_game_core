@@ -199,7 +199,8 @@
                     game.removeAction(data.key+"_action");
                 }
             }],
-            readyButtons: []
+            readyButtons: [],
+            content: {}
         }, data);
         // Prepare buttons
         for(let bdata of data.button) {
@@ -209,22 +210,23 @@
             buttonObject.setAction(bdata.function);
             data.readyButtons.push(buttonObject);
         }
+        // Prepare components
+        data.content.multitext = multiText({
+            position: {
+                x: data.position.x + data.padding.h,
+                y: data.position.y + (data.padding.v*2) + data.fontSizeTitle
+            },
+            maxWidth: data.size.w - (data.padding.h*2),
+            value: data.text,
+            fontFamily: data.fontFamily,
+            fontSize: data.fontSize
+        });
+        data.content.multitext.height = data.content.multitext.getHeight();
+        data.size.h = (data.padding.v*4) + data.fontSizeTitle + data.content.multitext.height + 40;
         return {
             name: "dialog",
             data: data,
             render: function() {
-                // Prepare components
-                let multitext = multiText({
-                    position: {
-                        x: data.position.x + data.padding.h,
-                        y: data.position.y + (data.padding.v*2) + data.fontSizeTitle
-                    },
-                    maxWidth: data.size.w - (data.padding.h*2),
-                    value: data.text,
-                    fontFamily: data.fontFamily,
-                    fontSize: data.fontSize
-                });
-
                 // New position
                 if(data.freePosition == false) {
                     if(data.positionType == "center")
@@ -235,9 +237,13 @@
                         };
                     }
                 }
+                data.content.multitext.data.position = {
+                    x: data.position.x + data.padding.h,
+                    y: data.position.y + (data.padding.v*2) + data.fontSizeTitle
+                };
                 // New size
                 if(data.fixedSize == false) {
-                    data.size.h = (data.padding.v*4) + data.fontSizeTitle + multitext.getHeight() + 40;
+                    data.size.h = (data.padding.v*4) + data.fontSizeTitle + data.content.multitext.height + 40;
                 }
                 // Render background
                 viewport.context.rectangle({
@@ -261,7 +267,7 @@
                     text: data.title
                 });
                 // Render multiline text
-                multitext.render();
+                data.content.multitext.render();
                 // Render buttons
                 for(let buttonObject of data.readyButtons) {
                     buttonObject.data.position = {
